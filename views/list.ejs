@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8">
   <title>To Do List</title>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
@@ -11,15 +12,16 @@
 
   <ul>
     <% newItems.forEach( el => { %>
-      <li><%= el %></li>
+    <li><%= el %></li>
     <% }); %>
-    <li>
-      <form action="/" method="post">
-        <input type="text" name="newItem" required autofocus>
-        <button type="submit">Add</button>
-      </form>
-    </li>
   </ul>
+  
+  <form action="/" method="post">
+    <input type="text" name="newItem" required autofocus>
+    <button type="submit">Add</button>
+  </form>
+
+
 
 </body>
 
