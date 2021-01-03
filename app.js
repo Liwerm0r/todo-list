@@ -7,6 +7,7 @@ app.use(express.static(`${__dirname}/public`));
 app.set('view engine', 'ejs');
 
 let newItems = ["Buy Food", "Cook Food", "Eat Food"];
+let workItems = [];
 
 
 app.get("/", (req, res) => {
@@ -17,15 +18,33 @@ app.get("/", (req, res) => {
   };
   const date = new Date().toLocaleDateString('en-EN', options);
   res.render('list', {
-    date: date,
+    listTitle: date,
     newItems: newItems
   });
 });
 
+app.get("/work", (req, res) => {
+  res.render('list', {
+    listTitle: 'Work List',
+    newItems: workItems
+  });
+});
+
+// app.post("/work", (req, res) => {
+//   console.log(req.body);
+//   workItems.push(req.body.newItem);
+//   res.redirect("/work");
+// });
+
 
 app.post("/", (req, res) => {
-  newItems.push(req.body.newItem);
-  res.redirect("/");
+  if ( req.body.list === "Work List") {
+    workItems.push(req.body.newItem);
+    res.redirect("/work")
+  } else {
+    newItems.push(req.body.newItem);
+    res.redirect("/");
+  }
 });
 
 
