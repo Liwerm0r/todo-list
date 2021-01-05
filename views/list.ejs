@@ -5,11 +5,12 @@
   </div>
 
   <div class="box">
-    <% newItems.forEach( el => { %>
-    <div class="item">
-      <input type="checkbox">
-      <p><%= el %></p>
-    </div>
+
+    <% newItems.forEach( item => { %>
+      <div class="item">
+        <input type="checkbox">
+        <p><%= item.name %></p>
+      </div>
     <% }); %>
 
     <form clas="item" action="/" method="post">
