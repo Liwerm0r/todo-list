@@ -1,7 +1,7 @@
 const express = require('express'),
   app = express(),
-  date = require(`${__dirname}/date.js`),
-  secrets = require(`${__dirname}/credentials.js`),
+  date = require(`./date.js`),
+  secrets = require('./credentials.js'),
   mongoose = require('mongoose'),
   _ = require('lodash'),
   port = 3000;
