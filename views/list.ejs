@@ -7,10 +7,12 @@
   <div class="box">
 
     <% newItems.forEach( item => { %>
-      <div class="item">
-        <input type="checkbox">
-        <p><%= item.name %></p>
-      </div>
+      <form action="/delete" method="POST">
+        <div class="item">
+          <input type="checkbox" onChange="this.form.submit()" name="itemToDelete" value="<%= item._id %>">
+          <p><%= item.name %></p>
+        </div>
+      </form>
     <% }); %>
 
     <form clas="item" action="/" method="post">

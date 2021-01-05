@@ -56,14 +56,19 @@ app.get("/about", (req, res) => {
 // POST Requests
 
 app.post("/", (req, res) => {
-  if (req.body.list === "Work List") {
-    workItems.push(req.body.newItem);
-    res.redirect("/work")
-  } else {
     const item = new Item({ name: req.body.newItem });
     item.save();
     res.redirect("/");
-  }
+});
+
+app.post("/delete", (req, res) => {
+  Item.findByIdAndRemove(req.body.itemToDelete, {useFindAndModify: false}, (err) => {
+    if ( err ) {
+      console.log(err)
+    } else {
+      res.redirect("/");
+    }
+  });
 });
 
 
