@@ -1,6 +1,7 @@
 const express = require('express'),
   app = express(),
   date = require(`${__dirname}/date.js`),
+  secrets = require(`${__dirname}/credentials.js`),
   mongoose = require('mongoose'),
   _ = require('lodash'),
   port = 3000;
@@ -12,7 +13,8 @@ app.set('view engine', 'ejs');
 ////////////////////////////////////////////////////////////////////////////////
 // ///////////////////      DB STUFF     ///////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-mongoose.connect('mongodb://localhost:27017/todolistDB', {useNewUrlParser: true, useUnifiedTopology: true});
+const url = secrets.url;
+mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true});
 // create DB schema
 const itemSchema = new mongoose.Schema({ name: String });
 const Item = mongoose.model('Item', itemSchema);
@@ -113,6 +115,6 @@ app.post("/delete", (req, res) => {
 });
 
 
-app.listen(port, () => {
+app.listen(process.env.PORT || port, () => {
   console.log(`Server is runnig on port: ${port}`);
 });
