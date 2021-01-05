@@ -2,6 +2,7 @@ const express = require('express'),
   app = express(),
   date = require(`${__dirname}/date.js`),
   mongoose = require('mongoose'),
+  _ = require('lodash'),
   port = 3000;
 
 app.use(express.urlencoded({extended: true}));
@@ -21,6 +22,13 @@ const item2 = new Item({ name: "Hit the + button to add a new item." });
 const item3 = new Item({ name: "<-- Hit this to delete an item." });
 const defaultItems = [item1, item2, item3];
 
+const listSchema = new mongoose.Schema({
+  name: String,
+  items: [itemSchema]
+});
+
+const List = mongoose.model('List', listSchema);
+
 // GET Requests
 
 app.get("/", (req, res) => {
@@ -37,14 +45,25 @@ app.get("/", (req, res) => {
       });
       res.redirect("/");
     }
-    res.render('list', { listTitle: date.generateDate(), newItems: items });
+    res.render('list', { listTitle: "Today", newItems: items });
   });
 });
 
-app.get("/work", (req, res) => {
-  res.render('list', {
-    listTitle: 'Work List',
-    newItems: workItems
+app.get("/:customListName", (req, res) => {
+  const customListName = _.capitalize(req.params.customListName);
+  List.findOne({ name: customListName }, (err, foundList) => {
+    if ( !err ) {
+      if ( !foundList ) {
+        const list = new List({
+          name: customListName,
+          items: defaultItems
+        });
+        list.save();
+        res.redirect(`/${customListName}`);
+      } else {
+        res.render('list', { listTitle: foundList.name, newItems: foundList.items});
+      }
+    }
   });
 });
 
@@ -56,19 +75,41 @@ app.get("/about", (req, res) => {
 // POST Requests
 
 app.post("/", (req, res) => {
+  const itemName = req.body.newItem;
+  const listName = req.body.list;
+
     const item = new Item({ name: req.body.newItem });
-    item.save();
-    res.redirect("/");
+    if ( listName === "Today") {
+      item.save();
+      res.redirect("/");
+    } else {
+      List.findOne({ name: listName }, (err, foundList) => {
+        foundList.items.push(item);
+        foundList.save();
+        res.redirect(`/${listName}`);
+      });
+    }
 });
 
 app.post("/delete", (req, res) => {
-  Item.findByIdAndRemove(req.body.itemToDelete, {useFindAndModify: false}, (err) => {
-    if ( err ) {
-      console.log(err)
-    } else {
-      res.redirect("/");
-    }
-  });
+  const itemId = req.body.itemToDelete;
+  const listName = req.body.list;
+
+  if ( listName === "Today" ) {
+    Item.findByIdAndRemove(itemId, {useFindAndModify: false}, (err) => {
+      if ( !err ) {
+        res.redirect("/");
+      }
+    });
+  } else {
+    List.findOneAndUpdate({ name: listName }, { $pull : { items: { _id: itemId }}}, (err, foundList) => {
+      if ( !err ) {
+        res.redirect(`/${listName}`);
+      }
+    });
+  }
+
+
 });
 
 
